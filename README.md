@@ -27,3 +27,4 @@ see [here](https://github.com/rollup/rollup/wiki/Plugins)
 ### TODO
 
 * better tslint rules
+* NODE_ENV support or similar, for code dropping in production builds
