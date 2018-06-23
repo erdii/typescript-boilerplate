@@ -1,0 +1,52 @@
+{
+  "name": "typescript-boilerplate",
+  "bundleName": "typescriptBoilerplate",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/typescript-boilerplate.js",
+  "types": "dist/typescript-boilerplate.d.ts",
+  "files": [
+    "dist/*"
+  ],
+  "scripts": {
+    "build-web": "npm-run-all -s clean build-js-web copy-static",
+    "watch-web": "npm-run-all -s clean watch-js-web",
+    "build": "npm-run-all -s clean build-js",
+    "watch": "npm-run-all -s clean watch-js",
+    "copy-static": "cp -r static dist/static",
+    "build-js-web": "rollup -c --environment WEBAPP",
+    "watch-js-web": "rollup -cw --environment WEBAPP",
+    "build-js": "rollup -c",
+    "watch-js": "rollup -cw",
+    "clean": "rm -rf ./dist ./.rpt2_cache || true",
+    "prepack": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erdii/typescript-boilerplate.git"
+  },
+  "keywords": [
+    "typescript",
+    "boilerplate",
+    "rollup",
+    "universal"
+  ],
+  "author": "erdii <erdiicodes@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/erdii/typescript-boilerplate/issues"
+  },
+  "homepage": "https://github.com/erdii/typescript-boilerplate#readme",
+  "devDependencies": {
+    "npm-run-all": "^4.1.3",
+    "rollup": "^0.61.2",
+    "rollup-plugin-browsersync": "^0.2.6",
+    "rollup-plugin-generate-html-template": "^1.1.0",
+    "rollup-plugin-typescript2": "^0.15.0",
+    "rollup-plugin-uglify": "^4.0.0",
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.2",
+    "typestrict": "0.0.9"
+  }
+}

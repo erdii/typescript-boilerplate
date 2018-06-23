@@ -1,0 +1,10 @@
+{
+  "extends": ["typestrict", "tslint:latest"],
+  "rules": {
+      "indent": [true, "tabs"],
+      "eofline": [false],
+      "no-unused-variable": true,
+      "no-use-before-declare": true,
+      "radix": true
+  }
+}
