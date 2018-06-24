@@ -7,4 +7,6 @@ logger.info("Hello world!?!", {
 	hui: "booooo",
 	that: "this223",
 	zoink: "multipass!?",
+	env: process.env.NODE_ENV,
+	apiKey: process.env.WEBAPP_ENV_API_KEY,
 });

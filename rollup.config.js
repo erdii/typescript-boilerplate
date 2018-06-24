@@ -2,6 +2,7 @@ import typescript from "rollup-plugin-typescript2";
 import { uglify } from "rollup-plugin-uglify";
 import htmlTemplate from "rollup-plugin-generate-html-template";
 import browsersync from "rollup-plugin-browsersync";
+import replace from "rollup-plugin-replace";
 
 const packageJSON = require("./package.json");
 
@@ -11,11 +12,12 @@ const licenseText = `/**
  */`;
 
 const options = {
-	webapp: process.env.WEBAPP === "true",
 	outputFolder: "dist",
 	bundlePath: `dist/${packageJSON.name}.js`,
 	minifiedBundlePath: `dist/${packageJSON.name}.min.js`,
 	htmlTemplate: "src/template.html",
+	exportedEnvPrefix: "WEBAPP_ENV_",
+	webapp: process.env.WEBAPP === "true",
 	IS_WATCH_MODE: process.env.ROLLUP_WATCH === "true",
 };
 
@@ -37,6 +39,16 @@ function createBundleConfig(dest, { output, plugins }) {
 
 		plugins,
 	}
+}
+
+function getWebappEnvConfig() {
+	const envVarNames = Object.keys(process.env)
+		.filter(name => name.startsWith(options.exportedEnvPrefix) && name.length > options.exportedEnvPrefix.length)
+
+	return envVarNames.reduce((map, name) => {
+		map[`process.env.${name}`] = JSON.stringify(process.env[name]);
+		return map;
+	}, {});
 }
 
 let rollupConfig = [];
@@ -66,7 +78,16 @@ rollupConfig.push(createBundleConfig(options.minifiedBundlePath, {
 if (options.webapp) {
 	const minifiedBundleConfig = rollupConfig.find(cfg => cfg.output.file === options.minifiedBundlePath);
 
+	console.log(getWebappEnvConfig());
 	minifiedBundleConfig.plugins.push(
+		// inject process.env.NODE_ENV
+		replace({
+			...getWebappEnvConfig(),
+			"process.env.NODE_ENV": options.IS_WATCH_MODE
+				? JSON.stringify( "development" )
+				: JSON.stringify( "production" )
+
+		}),
 		// generate a index.html file
 		htmlTemplate({
 			template: options.htmlTemplate,

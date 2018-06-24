@@ -2,3 +2,5 @@ node_modules
 npm-error.log
 .rpt2_cache
 dist
+.env.production
+.env.development

@@ -20,11 +20,16 @@ folder | description
 *./static* | **Webapp mode**: static files that are copied into the *./dist/static* in the build step - images, stylesheets and so on go here
 *./dist* | build output folder
 
+### inject environment vars
+
+environment variables with starting with **WEBAPP_ENV_** are injected into `process.env`, you can use envvar files for easier development
+
+file | description
+--- | ---
+*./.env* | fallback environment var file - used when the wanted envvar file does not exist
+*./.env.production* | environment var file used for production builds - this file is ignored by git
+*./.env.development* | environment var file used for development builds - this file is ignored by git
+
 ### rollup plugins
 
 see [here](https://github.com/rollup/rollup/wiki/Plugins)
-
-### TODO
-
-* better tslint rules
-* NODE_ENV support or similar, for code dropping in production builds
