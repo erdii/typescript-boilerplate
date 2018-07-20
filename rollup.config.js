@@ -21,6 +21,7 @@ const options = {
 	exportedEnvPrefix: "WEBAPP_ENV_",
 	webapp: process.env.WEBAPP === "true",
 	IS_WATCH_MODE: process.env.ROLLUP_WATCH === "true",
+	NO_MINIFY: process.env.NO_MINIFY === "true",
 };
 
 const defaultPlugins = [
@@ -67,8 +68,8 @@ function createBundleConfig(dest, { output, plugins }) {
 		input: "./src/index.ts",
 		output: {
 			file: dest,
-			format: "umd",
 			name: packageJSON.bundleName,
+			format: "umd",
 			...output,
 		},
 
@@ -88,33 +89,40 @@ function getWebappEnvConfig() {
 
 let rollupConfig = [];
 
-if (!options.webapp) {
-	// add full bundle configuration only when we don't build a webapp
+if (options.IS_WATCH_MODE) {
+	// add full bundle configuration only when we don't create a production build
 	rollupConfig.push(createBundleConfig(options.bundlePath, {
 		output: {
 			banner: licenseText,
+			sourcemap: "inline",
 		},
 		plugins: defaultPlugins
 	}));
+} else {
+
+	// add uglify only if not disabled
+	const plugins = [...defaultPlugins];
+	if (!options.NO_MINIFY) {
+		plugins.push(uglify());
+	}
+
+	// use minified bundle configuration
+	rollupConfig.push(createBundleConfig(options.minifiedBundlePath, {
+		output: {
+			banner: licenseText,
+		},
+		plugins,
+	}));
 }
 
-// add minified bundle configuration
-rollupConfig.push(createBundleConfig(options.minifiedBundlePath, {
-	output: {
-		banner: licenseText,
-	},
-	plugins: [
-		...defaultPlugins,
-		uglify(),
-	],
-}));
 
 // webapp specific configuration for minified bundle
 if (options.webapp) {
-	const minifiedBundleConfig = rollupConfig.find(cfg => cfg.output.file === options.minifiedBundlePath);
+	const bundleConfig = rollupConfig[0];
 
-	console.log(getWebappEnvConfig());
-	minifiedBundleConfig.plugins.push(
+	console.log("Injected envvars:", getWebappEnvConfig());
+
+	bundleConfig.plugins.push(
 		// inject process.env.NODE_ENV
 		replace({
 			...getWebappEnvConfig(),
@@ -132,7 +140,7 @@ if (options.webapp) {
 
 	// if we are in watch mode
 	if (options.IS_WATCH_MODE) {
-		minifiedBundleConfig.plugins.push(
+		bundleConfig.plugins.push(
 			// enable browsersync
 			browsersync({
 				server: options.outputFolder,
