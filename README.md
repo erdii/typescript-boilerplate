@@ -1,3 +1,5 @@
+This was an experiment!
+
 # typescript-boilerplate
 
 Slightly opinionated typescript boilerplate for use in node AND the browser.  
